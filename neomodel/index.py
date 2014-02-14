@@ -47,7 +47,10 @@ class NodeIndexManager(object):
                 prop = self.node_class.get_property(prop_name)
                 prop_index = prop.__index__
                 if prop_index:
-                    if 'type' in prop.index_config and prop.index_config[
+                    if prop.index_config is None:
+                         #exact is the default type.
+                        return "exact"
+                    elif 'type' in prop.index_config and prop.index_config[
                         'type']:
                         return prop.index_config['type']
             #: This is because where based on semistructured node
