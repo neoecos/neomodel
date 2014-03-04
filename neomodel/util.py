@@ -59,11 +59,12 @@ def cypher_query(connection, query, params=None, handle_unique=True):
         query = query.__str__()
 
     try:
-        cq = neo4j.CypherQuery(connection, '')
+        cq = neo4j.CypherQuery(connection, query)
         start = time.clock()
-        result = neo4j.CypherResults(cq._cypher._post({'query': query, 'params': params or {}}))
+        result = neo4j.IterableCypherResults(cq._cypher._post({'query': query,
+         'params': params or {}}))
         end = time.clock()
-        results = result.data, list(result.columns)
+        results = [record for record in iter(result)], list(result.columns)
     except ClientError as e:
         if (handle_unique and e.exception == 'CypherExecutionException' and
                 " already exists with label " in e.message and e.message.startswith('Node ')):
